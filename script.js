@@ -60,7 +60,7 @@ function renderPlayer(url) {
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
     const embedUrl = `${baseUrl}embed.html?v=${encodeURIComponent(url)}`;
     
-    const embedCode = `<iframe src="${embedUrl}" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>`;
+    const embedCode = `<iframe src="${embedUrl}" width="800" height="500" frameborder="0" allowfullscreen style="border-radius:15px; overflow:hidden;"></iframe>`;
 
     app.innerHTML = `
         <div class="player-container">
