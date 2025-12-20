@@ -52,32 +52,34 @@ function renderPlayer(url) {
     const params = new URLSearchParams(window.location.search);
     const name = params.get('n') || "Video";
     
-    // Ссылка на конкретное видео (текущая страница с параметрами)
+    // Ссылка на страницу (для кнопки Ссылка)
     const shareUrl = window.location.href; 
     
-    // Генерируем чистый код iframe
-    const embedCode = `<iframe src="${shareUrl}" width="640" height="360" frameborder="0" allowfullscreen></iframe>`;
+    // Ссылка на EMBED файл (для Iframe)
+    // Мы берем путь до текущей папки и добавляем embed.html
+    const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
+    const embedUrl = `${baseUrl}embed.html?v=${encodeURIComponent(url)}`;
+    
+    const embedCode = `<iframe src="${embedUrl}" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>`;
 
     app.innerHTML = `
         <div class="player-container">
-            <div class="glass" style="animation: slideUp 0.5s ease;">
+            <div class="glass">
                 <video id="v" controls preload="metadata">
                     <source src="${url}" type="video/mp4">
                 </video>
-                <h1 style="margin-top:20px; font-family: 'Inter', sans-serif;">${name}</h1>
-                
+                <h1 style="margin-top:20px">${name}</h1>
                 <div class="controls">
                     <button class="btn" id="copyLinkBtn">🔗 Ссылка</button>
                     <button class="btn" id="copyEmbedBtn">&lt;/&gt; Код вставки</button>
-                    <a href="${url}" download="${name}.mp4" class="btn" style="text-decoration:none; display:inline-flex; align-items:center;">⬇️ Скачать</a>
+                    <a href="${url}" download="${name}.mp4" class="btn" style="text-decoration:none">⬇️ Скачать</a>
                 </div>
             </div>
-            <button class="btn" style="margin-top:20px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.3)" 
-                    onclick="window.location.href='index.html'">← Назад в Nebula</button>
+            <button class="btn" style="margin-top:20px; background:none; color:white; border:1px solid rgba(255,255,255,0.3)" 
+                    onclick="window.location.href='index.html'">← Назад</button>
         </div>
     `;
 
-    // Назначаем обработчики событий после отрисовки
     document.getElementById('copyLinkBtn').onclick = () => copyToClipboard(shareUrl, "Ссылка скопирована!");
     document.getElementById('copyEmbedBtn').onclick = () => copyToClipboard(embedCode, "Код вставки скопирован!");
 }
