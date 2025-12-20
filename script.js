@@ -48,34 +48,55 @@ async function renderGallery() {
     }
 }
 
-// СТРАНИЦА ПЛЕЕРА
 function renderPlayer(url) {
     const params = new URLSearchParams(window.location.search);
     const name = params.get('n') || "Video";
     
-    // Прямая ссылка на страницу с параметром видео для "Поделиться"
+    // Ссылка на конкретное видео (текущая страница с параметрами)
     const shareUrl = window.location.href; 
+    
+    // Генерируем чистый код iframe
     const embedCode = `<iframe src="${shareUrl}" width="640" height="360" frameborder="0" allowfullscreen></iframe>`;
 
     app.innerHTML = `
         <div class="player-container">
-            <div class="glass">
+            <div class="glass" style="animation: slideUp 0.5s ease;">
                 <video id="v" controls preload="metadata">
                     <source src="${url}" type="video/mp4">
                 </video>
-                <h1 style="margin-top:20px">${name}</h1>
+                <h1 style="margin-top:20px; font-family: 'Inter', sans-serif;">${name}</h1>
+                
                 <div class="controls">
-                    <button class="btn" onclick="copyText('${shareUrl}')">🔗 Копировать ссылку</button>
-                    <button class="btn" onclick="copyText(\`${embedCode}\`)">Код вставки</button>
-                    <a href="${url}" download class="btn" style="text-decoration:none">⬇️ Скачать видео</a>
+                    <button class="btn" id="copyLinkBtn">🔗 Ссылка</button>
+                    <button class="btn" id="copyEmbedBtn">&lt;/&gt; Код вставки</button>
+                    <a href="${url}" download="${name}.mp4" class="btn" style="text-decoration:none; display:inline-flex; align-items:center;">⬇️ Скачать</a>
                 </div>
             </div>
-            <button class="btn" style="margin-top:20px; background:none; color:white; border:1px solid white" 
+            <button class="btn" style="margin-top:20px; background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.3)" 
                     onclick="window.location.href='index.html'">← Назад в Nebula</button>
         </div>
     `;
-    
-    // Исправлено: видео не стартует само, так как нет атрибута 'autoplay'
+
+    // Назначаем обработчики событий после отрисовки
+    document.getElementById('copyLinkBtn').onclick = () => copyToClipboard(shareUrl, "Ссылка скопирована!");
+    document.getElementById('copyEmbedBtn').onclick = () => copyToClipboard(embedCode, "Код вставки скопирован!");
+}
+
+// Улучшенная функция копирования
+async function copyToClipboard(text, message) {
+    try {
+        await navigator.clipboard.writeText(text);
+        alert(message);
+    } catch (err) {
+        // Запасной вариант, если браузер блокирует navigator.clipboard
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert(message);
+    }
 }
 
 function copyText(text) {
