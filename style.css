@@ -1,145 +1,114 @@
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --text-color: #ffffff;
+    --glass: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.15);
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: white;
+    background: #050505;
     min-height: 100vh;
-    overflow: hidden;
-    background: #0f172a;
-    color: var(--text-color);
+    overflow-y: auto; /* Фикс прокрутки */
 }
 
-/* Анимированный градиентный фон */
-.bg-container {
+/* Динамический фон Nebula */
+.nebula-bg {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: -1;
-    filter: blur(80px);
+    background: linear-gradient(45deg, #0f172a, #1e1b4b, #581c87, #1e1b4b);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
 }
 
-.blob {
-    position: absolute;
-    width: 500px;
-    height: 500px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 50%;
-    animation: move 20s infinite alternate;
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-.blob:nth-child(2) { background: #ec4899; animation-delay: -5s; width: 400px; }
-.blob:nth-child(3) { background: #06b6d4; animation-delay: -10s; left: 50%; }
-
-@keyframes move {
-    from { transform: translate(-10%, -10%); }
-    to { transform: translate(20%, 20%); }
+.main-header {
+    padding: 20px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Эффект Liquid Glass */
-.glass-container {
-    background: var(--glass-bg);
-    backdrop-filter: blur(15px);
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    cursor: pointer;
+}
+
+/* Liquid Glass Container */
+.glass {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 20px;
 }
 
-.player-wrapper video {
-    width: 100%;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-
-.controls-panel {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.action-btn, .upload-btn {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid var(--glass-border);
-    padding: 10px 20px;
-    border-radius: 12px;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.action-btn:hover { background: rgba(255,255,255,0.25); }
-
-.share-menu {
-    display: none;
-    position: absolute;
-    background: rgba(15, 23, 42, 0.9);
-    padding: 15px;
-    border-radius: 12px;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 10;
-}
-
-.container {
-    width: 90%;
-    max-width: 1000px;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    margin: 40px 0;
-    z-index: 1;
-}
-
-.glass-container {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px;
-    padding: 25px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-}
-
+/* Grid для главной */
 .video-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 20px 5%;
 }
 
 .video-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    padding: 10px;
     cursor: pointer;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid transparent;
+    transition: transform 0.3s ease;
 }
 
-.video-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-}
+.video-card:hover { transform: scale(1.03); }
 
-.video-card img {
+.thumbnail {
     width: 100%;
-    border-radius: 10px;
-    margin-bottom: 8px;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 15px;
+    object-fit: cover;
 }
 
-.video-card span {
-    font-size: 0.9rem;
-    display: block;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Стили плеера */
+.player-container {
+    max-width: 1100px;
+    margin: 20px auto;
+    width: 90%;
 }
+
+video {
+    width: 100%;
+    border-radius: 15px;
+    max-height: 80vh; /* Чтобы вертикальные видео не вылезали за экран */
+    background: #000;
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover { opacity: 0.8; }

@@ -1,66 +1,86 @@
-// НАСТРОЙКИ (замените на свои)
 const GITHUB_USER = "onenicked";
 const GITHUB_REPO = "Nebula";
-const VIDEO_PATH = "videos"; 
+const VIDEO_PATH = "videos";
 
-const videoGrid = document.getElementById('videoGrid');
-const mainVideo = document.getElementById('mainVideo');
-const currentTitle = document.getElementById('currentTitle');
-const downloadBtn = document.getElementById('downloadBtn');
+const app = document.getElementById('app');
 
-// Функция получения списка файлов через GitHub API
-async function loadVideos() {
-    try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${VIDEO_PATH}`);
-        const files = await response.json();
+// Роутинг: проверяем, открыто ли конкретное видео
+async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const videoUrl = params.get('v');
 
-        videoGrid.innerHTML = ''; // Очистить статус загрузки
-
-        files.forEach(file => {
-            if (file.name.endsWith('.mp4') || file.name.endsWith('.mov')) {
-                createVideoCard(file);
-            }
-        });
-    } catch (error) {
-        videoGrid.innerHTML = '<p>Ошибка загрузки видео. Проверьте настройки API.</p>';
-        console.error(error);
+    if (videoUrl) {
+        renderPlayer(videoUrl);
+    } else {
+        renderGallery();
     }
 }
 
-function createVideoCard(file) {
-    const card = document.createElement('div');
-    card.className = 'video-card';
-    card.innerHTML = `
-        <div style="height:100px; background:rgba(255,255,255,0.1); border-radius:10px; display:flex; align-items:center; justify-content:center">🎬</div>
-        <span>${file.name}</span>
+// ГЛАВНАЯ СТРАНИЦА
+async function renderGallery() {
+    app.innerHTML = `<div class="video-grid" id="grid">Загрузка космической библиотеки...</div>`;
+    const grid = document.getElementById('grid');
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${VIDEO_PATH}`);
+        const files = await response.json();
+        grid.innerHTML = '';
+
+        files.forEach(file => {
+            if (file.name.match(/\.(mp4|mov|webm)$/i)) {
+                const card = document.createElement('div');
+                card.className = 'glass video-card';
+                // Трюк с превью: добавляем #t=0.1 к видео, чтобы браузер подгрузил первый кадр
+                card.innerHTML = `
+                    <video class="thumbnail" preload="metadata">
+                        <source src="${file.download_url}#t=0.1" type="video/mp4">
+                    </video>
+                    <p style="margin-top:10px; font-weight:500">${file.name}</p>
+                `;
+                card.onclick = () => {
+                    window.location.search = `?v=${encodeURIComponent(file.download_url)}&n=${encodeURIComponent(file.name)}`;
+                };
+                grid.appendChild(card);
+            }
+        });
+    } catch (e) {
+        grid.innerHTML = 'Ошибка загрузки. Проверьте настройки репозитория.';
+    }
+}
+
+// СТРАНИЦА ПЛЕЕРА
+function renderPlayer(url) {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('n') || "Video";
+    
+    // Прямая ссылка на страницу с параметром видео для "Поделиться"
+    const shareUrl = window.location.href; 
+    const embedCode = `<iframe src="${shareUrl}" width="640" height="360" frameborder="0" allowfullscreen></iframe>`;
+
+    app.innerHTML = `
+        <div class="player-container">
+            <div class="glass">
+                <video id="v" controls preload="metadata">
+                    <source src="${url}" type="video/mp4">
+                </video>
+                <h1 style="margin-top:20px">${name}</h1>
+                <div class="controls">
+                    <button class="btn" onclick="copyText('${shareUrl}')">🔗 Копировать ссылку</button>
+                    <button class="btn" onclick="copyText(\`${embedCode}\`)"> < > Код вставки</button>
+                    <a href="${url}" download class="btn" style="text-decoration:none">⬇️ Скачать видео</a>
+                </div>
+            </div>
+            <button class="btn" style="margin-top:20px; background:none; color:white; border:1px solid white" 
+                    onclick="window.location.href='index.html'">← Назад в Nebula</button>
+        </div>
     `;
     
-    card.onclick = () => playVideo(file.download_url, file.name);
-    videoGrid.appendChild(card);
+    // Исправлено: видео не стартует само, так как нет атрибута 'autoplay'
 }
 
-function playVideo(url, name) {
-    mainVideo.src = url;
-    currentTitle.innerText = name;
-    downloadBtn.href = url;
-    mainVideo.play();
-    
-    // Плавная прокрутка к плееру
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function copyText(text) {
+    navigator.clipboard.writeText(text);
+    alert("Скопировано в буфер обмена!");
 }
 
-// Функции "Поделиться"
-function copyLink() {
-    const url = window.location.href + "?v=" + encodeURIComponent(mainVideo.src);
-    navigator.clipboard.writeText(url);
-    alert("Ссылка на страницу скопирована!");
-}
-
-function copyEmbed() {
-    const code = `<iframe src="${window.location.href}" width="640" height="360"></iframe>`;
-    navigator.clipboard.writeText(code);
-    alert("Код для вставки скопирован!");
-}
-
-// Запуск
-loadVideos();
+init();
