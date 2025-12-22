@@ -1,10 +1,9 @@
 const GITHUB_USER = "onenicked";
 const GITHUB_REPO = "Nebula";
-const VIDEO_PATH = "videos";
 
 const app = document.getElementById('app');
 
-// Роутинг: проверяем, открыто ли конкретное видео
+// Инициализация
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const videoUrl = params.get('v');
@@ -16,81 +15,97 @@ async function init() {
     }
 }
 
-// ГЛАВНАЯ СТРАНИЦА
+// ГЛАВНАЯ СТРАНИЦА: Загрузка видео из ассетов всех релизов
 async function renderGallery() {
-    app.innerHTML = `<div class="video-grid" id="grid">Загрузка космической библиотеки...</div>`;
+    app.innerHTML = `<div class="video-grid" id="grid">Загрузка космической библиотеки из релизов...</div>`;
     const grid = document.getElementById('grid');
     
     try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${VIDEO_PATH}`);
-        const files = await response.json();
+        // Запрашиваем все релизы репозитория
+        const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases`);
+        const releases = await response.json();
         grid.innerHTML = '';
 
-        files.forEach(file => {
-            if (file.name.match(/\.(mp4|mov|webm)$/i)) {
-                const card = document.createElement('div');
-                card.className = 'glass video-card';
-                // Трюк с превью: добавляем #t=0.1 к видео, чтобы браузер подгрузил первый кадр
-                card.innerHTML = `
-                    <video class="thumbnail" preload="metadata">
-                        <source src="${file.download_url}#t=0.1" type="video/mp4">
-                    </video>
-                    <p style="margin-top:10px; font-weight:500">${file.name}</p>
-                `;
-                card.onclick = () => {
-                    window.location.search = `?v=${encodeURIComponent(file.download_url)}&n=${encodeURIComponent(file.name)}`;
-                };
-                grid.appendChild(card);
-            }
+        let hasVideos = false;
+
+        releases.forEach(release => {
+            release.assets.forEach(asset => {
+                // Фильтр по расширениям видео
+                if (asset.name.match(/\.(mp4|mov|webm)$/i)) {
+                    hasVideos = true;
+                    const card = document.createElement('div');
+                    card.className = 'glass video-card';
+                    
+                    const videoUrl = asset.browser_download_url;
+
+                    card.innerHTML = `
+                        <video class="thumbnail" preload="metadata">
+                            <source src="${videoUrl}#t=0.1" type="video/mp4">
+                        </video>
+                        <div style="padding: 15px">
+                            <p style="font-weight:500; margin:0">${asset.name}</p>
+                            <small style="opacity:0.5; font-size:10px">${release.tag_name}</small>
+                        </div>
+                    `;
+
+                    card.onclick = () => {
+                        window.location.search = `?v=${encodeURIComponent(videoUrl)}&n=${encodeURIComponent(asset.name)}`;
+                    };
+                    grid.appendChild(card);
+                }
+            });
         });
+
+        if (!hasVideos) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center">В релизах пока нет видеофайлов. Загрузите их в GitHub Releases!</div>';
+        }
+
     } catch (e) {
-        grid.innerHTML = 'Ошибка загрузки. Проверьте настройки репозитория.';
+        console.error("Ошибка API:", e);
+        grid.innerHTML = 'Ошибка загрузки. Проверьте доступ к репозиторию или лимиты API.';
     }
 }
 
+// ПЛЕЕР: Отображение видео и инструментов
 function renderPlayer(url) {
     const params = new URLSearchParams(window.location.search);
     const name = params.get('n') || "Video";
     
-    // Ссылка на страницу (для кнопки Ссылка)
     const shareUrl = window.location.href; 
     
-    // Ссылка на EMBED файл (для Iframe)
-    // Мы берем путь до текущей папки и добавляем embed.html
+    // Формируем путь для iframe (поддерживает и GitHub Pages, и локальный запуск)
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
     const embedUrl = `${baseUrl}embed.html?v=${encodeURIComponent(url)}`;
-    
-    const embedCode = `<iframe src="${embedUrl}" width="800" height="500" frameborder="0" allowfullscreen style="border:none; display:block;"></iframe>`;
+    const embedCode = `<iframe src="${embedUrl}" width="800" height="500" frameborder="0" allowfullscreen style="border-radius:12px; overflow:hidden; border:none;"></iframe>`;
 
     app.innerHTML = `
         <div class="player-container">
             <div class="glass">
-                <video id="v" controls preload="metadata">
+                <video id="v" controls autoplay preload="metadata">
                     <source src="${url}" type="video/mp4">
                 </video>
                 <h1 style="margin-top:20px">${name}</h1>
                 <div class="controls">
                     <button class="btn" id="copyLinkBtn">🔗 Ссылка</button>
                     <button class="btn" id="copyEmbedBtn">&lt;/&gt; Код вставки</button>
-                    <a href="${url}" download="${name}.mp4" class="btn" style="text-decoration:none">⬇️ Скачать</a>
+                    <a href="${url}" target="_blank" class="btn" style="text-decoration:none">⬇️ Скачать</a>
                 </div>
             </div>
             <button class="btn" style="margin-top:20px; background:none; color:white; border:1px solid rgba(255,255,255,0.3)" 
-                    onclick="window.location.href='index.html'">← Назад</button>
+                    onclick="window.location.href='index.html'">← Назад к библиотеке</button>
         </div>
     `;
 
-    document.getElementById('copyLinkBtn').onclick = () => copyToClipboard(shareUrl, "Ссылка скопирована!");
-    document.getElementById('copyEmbedBtn').onclick = () => copyToClipboard(embedCode, "Код вставки скопирован!");
+    document.getElementById('copyLinkBtn').onclick = () => copyToClipboard(shareUrl, "Ссылка на страницу скопирована!");
+    document.getElementById('copyEmbedBtn').onclick = () => copyToClipboard(embedCode, "Код для вставки скопирован!");
 }
 
-// Улучшенная функция копирования
+// Универсальное копирование
 async function copyToClipboard(text, message) {
     try {
         await navigator.clipboard.writeText(text);
         alert(message);
     } catch (err) {
-        // Запасной вариант, если браузер блокирует navigator.clipboard
         const textArea = document.createElement("textarea");
         textArea.value = text;
         document.body.appendChild(textArea);
@@ -99,11 +114,6 @@ async function copyToClipboard(text, message) {
         document.body.removeChild(textArea);
         alert(message);
     }
-}
-
-function copyText(text) {
-    navigator.clipboard.writeText(text);
-    alert("Скопировано в буфер обмена!");
 }
 
 init();

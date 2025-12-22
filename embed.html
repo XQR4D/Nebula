@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Player</title>
     <style>
         * { box-sizing: border-box; }
         body, html { 
@@ -39,7 +40,7 @@
             display: flex;
             align-items: center; justify-content: center;
             z-index: 10;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .play-overlay::after {
@@ -54,15 +55,13 @@
         .hidden { 
             opacity: 0; 
             visibility: hidden; 
-            transform: scale(1.5); /* Эффект увеличения при исчезновении */
+            transform: scale(1.5);
         }
     </style>
 </head>
 <body>
     <div class="embed-container" id="container">
-        <video id="v" preload="auto" playsinline>
-            <source src="" type="video/mp4">
-        </video>
+        <video id="v" preload="metadata" playsinline></video>
         <div class="play-overlay" id="playBtn"></div>
     </div>
 
@@ -73,31 +72,33 @@
         const container = document.getElementById('container');
         const playBtn = document.getElementById('playBtn');
 
+        // Устанавливаем источник видео
         if (videoSrc) {
             video.src = decodeURIComponent(videoSrc);
         }
 
-        // Клик по всей области контейнера
+        // Логика клика для запуска
         container.addEventListener('click', function() {
             if (video.paused) {
-                // Сначала скрываем кнопку, чтобы не было визуального лага
                 playBtn.classList.add('hidden');
+                video.controls = true; // Показываем стандартные кнопки управления после запуска
                 
-                // Включаем контроллеры
-                video.controls = true;
-                
-                // Запускаем видео
                 const playPromise = video.play();
-
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        // Если браузер заблокировал автоплей (редко при клике)
-                        console.log("Ошибка воспроизведения:", error);
-                        video.controls = true;
+                        console.error("Playback error:", error);
                         playBtn.classList.remove('hidden');
+                        video.controls = false;
                     });
                 }
             }
+        });
+
+        // Если видео закончилось, возвращаем кнопку "Play"
+        video.addEventListener('ended', () => {
+            playBtn.classList.remove('hidden');
+            video.controls = false;
+            video.load(); // Возвращаем к первому кадру
         });
     </script>
 </body>
