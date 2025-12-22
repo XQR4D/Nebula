@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nebula Player</title>
+    <title>Nebula Player Embed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
         body, html { 
@@ -12,13 +13,15 @@
             overflow: hidden; 
             background: #000;
             display: flex; align-items: center; justify-content: center;
+            font-family: 'Press Start 2P', cursive;
         }
         
         .embed-container { 
             position: relative; 
             width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; 
+            cursor: pointer;
+            border: 4px solid #fff; /* 8-bit рамка для вставки */
         }
 
         video { 
@@ -26,42 +29,48 @@
             height: 100%; 
             object-fit: contain; 
             background: #000;
+            image-rendering: pixelated; /* Поддержка ретро-стиля для превью */
         }
         
         .play-overlay {
             position: absolute;
-            width: 85px;
-            height: 85px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 4px solid #00ff00;
             display: flex;
             align-items: center; justify-content: center;
             z-index: 10;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s steps(4); /* "Рваная" анимация для 8-бит стиля */
         }
 
         .play-overlay::after {
             content: '';
             width: 0; height: 0;
             border-style: solid;
-            border-width: 15px 0 15px 25px;
-            border-color: transparent transparent transparent #ffffff;
-            margin-left: 6px;
+            border-width: 12px 0 12px 20px;
+            border-color: transparent transparent transparent #00ff00;
+            margin-left: 4px;
         }
 
         .hidden { 
-            opacity: 0; 
-            visibility: hidden; 
-            transform: scale(1.5);
+            display: none;
+        }
+
+        /* Эффект при наведении на мобилках/десктопе */
+        .embed-container:hover .play-overlay {
+            background: #00ff00;
+        }
+        .embed-container:hover .play-overlay::after {
+            border-color: transparent transparent transparent #000;
         }
     </style>
 </head>
 <body>
     <div class="embed-container" id="container">
-        <video id="v" preload="metadata" playsinline></video>
+        <video id="v" preload="metadata" playsinline>
+            <source id="videoSource" src="" type="video/mp4">
+        </video>
         <div class="play-overlay" id="playBtn"></div>
     </div>
 
@@ -69,24 +78,34 @@
         const params = new URLSearchParams(window.location.search);
         const videoSrc = params.get('v');
         const video = document.getElementById('v');
+        const source = document.getElementById('videoSource');
         const container = document.getElementById('container');
         const playBtn = document.getElementById('playBtn');
 
-        // Устанавливаем источник видео
+        // Установка громкости по умолчанию (0.4 = 40%)
+        video.volume = 0.4;
+
         if (videoSrc) {
-            video.src = decodeURIComponent(videoSrc);
+            const decodedUrl = decodeURIComponent(videoSrc);
+            // Добавляем #t=0.1 для превью
+            source.src = decodedUrl + "#t=0.1";
+            video.load();
         }
 
-        // Логика клика для запуска
         container.addEventListener('click', function() {
             if (video.paused) {
+                // Если мы на превью-кадре, сбрасываем в ноль для чистого старта
+                if (video.currentTime < 0.2) {
+                    video.currentTime = 0;
+                }
+                
                 playBtn.classList.add('hidden');
-                video.controls = true; // Показываем стандартные кнопки управления после запуска
+                video.controls = true;
                 
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
-                        console.error("Playback error:", error);
+                        console.log("Error:", error);
                         playBtn.classList.remove('hidden');
                         video.controls = false;
                     });
@@ -94,11 +113,10 @@
             }
         });
 
-        // Если видео закончилось, возвращаем кнопку "Play"
         video.addEventListener('ended', () => {
             playBtn.classList.remove('hidden');
             video.controls = false;
-            video.load(); // Возвращаем к первому кадру
+            video.currentTime = 0; // Возвращаем к началу (и превью) после конца
         });
     </script>
 </body>
