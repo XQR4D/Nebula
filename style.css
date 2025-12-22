@@ -1,114 +1,225 @@
 :root {
-    --glass: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.15);
+    --pixel-bg: #000000;
+    --pixel-border: #ffffff;
+    --pixel-accent: #00ff00;
+    --pixel-glitch-1: #ff00ff;
+    --pixel-glitch-2: #00ffff; 
+    --pixel-text: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
+    background-color: var(--pixel-bg);
+    color: var(--pixel-text);
+    font-family: 'Press Start 2P', cursive;
+    text-transform: uppercase;
+    line-height: 1.6;
+    font-size: 12px;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', system-ui, sans-serif;
-    color: white;
-    background: #050505;
-    min-height: 100vh;
-    overflow-y: auto; /* Фикс прокрутки */
+    overflow-x: hidden;
 }
 
-/* Динамический фон Nebula */
-.nebula-bg {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1;
-    background: linear-gradient(45deg, #0f172a, #1e1b4b, #581c87, #1e1b4b);
-    background-size: 400% 400%;
-    animation: gradientMove 15s ease infinite;
+h1 {
+    color: var(--pixel-accent);
+    text-shadow: 4px 4px 0px #000;
+    font-size: 18px;
+    text-align: center;
 }
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.logo-wrapper {
+    padding: 40px 0;
+    text-align: center;
+    background: linear-gradient(to bottom, #1a0033 0%, #000 100%);
+    border-bottom: 4px dashed var(--pixel-border);
+    margin-bottom: 30px;
 }
 
-.main-header {
-    padding: 20px 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.pixel-logo {
+    position: relative;
+    font-size: 48px;
+    display: inline-block;
+    color: #fff;
+    letter-spacing: 8px;
+    animation: glitch 1s infinite;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    cursor: pointer;
+.logo-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
 }
 
-/* Liquid Glass Container */
-.glass {
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 20px;
+.logo-layer:nth-child(1) {
+    color: var(--pixel-glitch-1);
+    left: -2px;
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+    text-shadow: 2px 0 0 var(--pixel-glitch-1);
 }
 
-/* Grid для главной */
+.logo-layer:nth-child(2) {
+    color: var(--pixel-glitch-2);
+    left: 2px;
+    animation: glitch-anim 3s infinite linear alternate-reverse;
+    text-shadow: -2px 0 0 var(--pixel-glitch-2);
+}
+
+.logo-sub {
+    margin-top: 15px;
+    font-size: 10px;
+    color: var(--pixel-accent);
+    letter-spacing: 2px;
+    animation: blink 0.8s infinite;
+}
+
 .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    padding: 20px 5%;
+    gap: 30px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glass {
+    background: var(--pixel-bg);
+    border: 4px solid var(--pixel-border);
+    box-shadow: 
+        inset -4px -4px 0px 0px #555,
+        4px 4px 0px 0px #000;
+    padding: 0;
+    overflow: hidden;
 }
 
 .video-card {
+    transition: transform 0.1s;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    image-rendering: pixelated;
 }
 
-.video-card:hover { transform: scale(1.03); }
+.video-card:hover {
+    border-color: var(--pixel-accent);
+    transform: translateY(-5px);
+}
+
+.video-card p {
+    padding: 0 15px;
+    font-size: 10px;
+}
+
+.video-card small {
+    padding: 0 15px 15px 15px;
+    display: block;
+    color: var(--pixel-accent);
+}
 
 .thumbnail {
     width: 100%;
     aspect-ratio: 16/9;
     background: #000;
-    border-radius: 15px;
     object-fit: cover;
+    border-bottom: 4px solid var(--pixel-border);
+    display: block;
 }
 
-/* Стили плеера */
 .player-container {
-    max-width: 1100px;
+    max-width: 900px;
     margin: 20px auto;
     width: 90%;
+    padding-bottom: 40px;
 }
 
 video {
     width: 100%;
-    border-radius: 15px;
-    max-height: 80vh; /* Чтобы вертикальные видео не вылезали за экран */
+    border: 4px solid var(--pixel-border);
     background: #000;
+    image-rendering: auto;
 }
 
 .controls {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
-    gap: 15px;
+    gap: 20px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .btn {
-    background: white;
-    color: black;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 600;
+    font-family: 'Press Start 2P', cursive;
+    background: #222;
+    border: 4px solid var(--pixel-border);
+    color: white;
+    padding: 12px 20px;
     cursor: pointer;
-    transition: 0.2s;
+    box-shadow: 4px 4px 0px #000;
+    position: relative;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
 }
 
-.btn:hover { opacity: 0.8; }
+.btn:active {
+    box-shadow: 0px 0px 0px #000;
+    top: 4px;
+    left: 4px;
+}
+
+@keyframes glitch-anim {
+    0% { clip-path: inset(10% 0 30% 0); }
+    20% { clip-path: inset(60% 0 10% 0); }
+    40% { clip-path: inset(40% 0 50% 0); }
+    60% { clip-path: inset(80% 0 5% 0); }
+    80% { clip-path: inset(15% 0 70% 0); }
+    100% { clip-path: inset(50% 0 20% 0); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes glitch {
+    0% { transform: skew(0deg); }
+    20% { transform: skew(-2deg); }
+    40% { transform: skew(2deg); }
+    60% { transform: skew(-1deg); }
+    100% { transform: skew(0deg); }
+}
+
+@media (max-width: 768px) {
+    .pixel-logo {
+        font-size: 22px;
+        letter-spacing: 4px;
+    }
+
+    .logo-wrapper {
+        padding: 25px 10px;
+    }
+
+    .video-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 14px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+        font-size: 9px;
+    }
+
+    .video-card:hover {
+        transform: none;
+    }
+
+    .player-container {
+        width: 95%;
+    }
+}

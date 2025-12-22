@@ -39,14 +39,16 @@ async function renderGallery() {
                     const videoUrl = asset.browser_download_url;
 
                     card.innerHTML = `
-                        <video class="thumbnail" preload="metadata">
-                            <source src="${videoUrl}#t=0.1" type="video/mp4">
-                        </video>
-                        <div style="padding: 15px">
-                            <p style="font-weight:500; margin:0">${asset.name}</p>
-                            <small style="opacity:0.5; font-size:10px">${release.tag_name}</small>
+                        <div style="border-bottom: 4px solid white; line-height: 0;">
+                            <video class="thumbnail" preload="metadata" style="filter: grayscale(0.5);">
+                                <source src="${videoUrl}#t=0.1" type="video/mp4">
+                            </video>
                         </div>
-                    `;
+                        <div style="padding: 15px">
+                        <p style="margin:0; font-size: 10px;">> ${asset.name}</p>
+                        <small style="color: var(--pixel-accent); font-size: 8px;">LVL: ${release.tag_name}</small>
+                    </div>
+                `;
 
                     card.onclick = () => {
                         window.location.search = `?v=${encodeURIComponent(videoUrl)}&n=${encodeURIComponent(asset.name)}`;
