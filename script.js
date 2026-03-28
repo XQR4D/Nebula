@@ -38,12 +38,12 @@ async function renderGallery() {
 
                     card.innerHTML = `
                         <div class="thumbnail-container">
-                            <div class="thumbnail-loading">LOADING PREVIEW...</div>
+                            <div class="thumbnail-loading">ЗАГРУЗКА ОБЛОЖКИ...</div>
                             <img class="thumbnail" src="" alt="${asset.name}">
                         </div>
                         <div style="padding: 15px">
-                            <p style="margin:0; font-size: 10px; word-break: break-all;">> ${asset.name}</p>
-                            <small style="color: var(--accent-primary); font-size: 8px;">LVL: ${release.tag_name}</small>
+                            <small style="margin:0; font-size: 10px; word-break: break-all;">НАЗВАНИЕ: ${release.tag_name}</small>
+                            <p style="color: var(--text); font-size: 8px;">> ИМЯ ФАЙЛА: ${asset.name}</p>
                         </div>
                     `;
 
@@ -88,7 +88,7 @@ function generateVideoThumbnail(card, videoUrl) {
     let timeoutId = setTimeout(() => {
         if (loading) {
             loading.classList.add('thumbnail-error');
-            loading.textContent = 'PREVIEW UNAVAILABLE';
+            loading.textContent = 'ОБЛОЖКА НЕДОСТУПНА';
             loading.style.animation = 'none';
         }
         cleanup();
@@ -131,7 +131,7 @@ function generateVideoThumbnail(card, videoUrl) {
     function showError() {
         if (loading) {
             loading.classList.add('thumbnail-error');
-            loading.textContent = 'PREVIEW UNAVAILABLE';
+            loading.textContent = 'ОБЛОЖКА НЕДОСТУПНА';
             loading.style.animation = 'none';
         }
         cleanup();
@@ -172,7 +172,7 @@ function renderPlayer(url) {
         </div>
         
         <button class="btn" style="margin-top:30px; background:none; color:white; border:6px solid rgba(255,255,255,0.3); min-width:180px;" 
-                onclick="window.location.href='index.html'">← НАЗАД К БИБЛИОТЕКЕ</button>
+                onclick="window.location.href='index.html'">← В БИБЛИОТЕКУ</button>
     </div>
     `;
 

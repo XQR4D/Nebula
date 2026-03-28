@@ -275,7 +275,8 @@ video {
     min-width: 165px;         
     text-align: center;
     white-space: nowrap;
-    flex: 1 1 165px;          
+    flex: 1 1 165px;       
+    max-width: 450px;   
 }
 
 .btn:hover {
