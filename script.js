@@ -166,8 +166,8 @@ function renderPlayer(url) {
             
             <div class="controls">
                 <button class="btn" id="copyLinkBtn">ССЫЛКА</button>
-                <button class="btn" id="copyEmbedBtn">&lt;/&gt; EMBED</button>
                 <a href="${url}" target="_blank" class="btn" style="text-decoration:none">СКАЧАТЬ</a>
+                <button class="btn" id="copyEmbedBtn">&lt;/&gt; EMBED</button>
             </div>
         </div>
         
