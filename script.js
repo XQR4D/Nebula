@@ -1,4 +1,4 @@
-const GITHUB_USER = "onenicked";
+const GITHUB_USER = "xqr4d";
 const GITHUB_REPO = "Nebula";
 
 const app = document.getElementById('app');
@@ -162,7 +162,7 @@ function renderPlayer(url) {
                 <source src="${url}" type="video/mp4">
             </video>
             
-            <h1>${name}</h1>
+            <h1>Имя файла: ${name}</h1>
             
             <div class="controls">
                 <button class="btn" id="copyLinkBtn">ССЫЛКА</button>
@@ -175,6 +175,14 @@ function renderPlayer(url) {
                 onclick="window.location.href='index.html'">← В БИБЛИОТЕКУ</button>
     </div>
     `;
+
+    const video = document.getElementById('v');
+    if (video) {
+        video.volume = 1;                    
+        video.addEventListener('loadedmetadata', () => {
+            video.volume = 0.2;
+        });
+    }
 
     document.getElementById('copyLinkBtn').onclick = () => copyToClipboard(shareUrl, "Ссылка на страницу скопирована!");
     document.getElementById('copyEmbedBtn').onclick = () => copyToClipboard(embedCode, "Код для вставки скопирован!");
