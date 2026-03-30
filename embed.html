@@ -160,14 +160,6 @@
         const container = document.getElementById('container');
         const playBtn = document.getElementById('playBtn');
         const endedMessage = document.getElementById('endedMessage');
-        const embedTitle = document.getElementById('embedTitle');
-
-        const videoName = params.get('n');
-        if (videoName) {
-            embedTitle.textContent = videoName.length > 38 
-                ? videoName.substring(0, 35) + '...' 
-                : videoName;
-        }
 
         video.volume = 0.2;
 

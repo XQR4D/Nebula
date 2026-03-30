@@ -287,7 +287,6 @@ video {
     box-shadow: 3px 3px 0 #000;
 }
 
-/* ====================== МОДАЛЬНЫЕ ОКНА ====================== */
 .modal {
     position: fixed;
     inset: 0;
@@ -341,26 +340,6 @@ video {
     font-size: 11px;
     color: var(--accent-secondary);
     letter-spacing: 1px;
-}
-
-.admin-controls {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    display: flex;
-    gap: 6px;
-    z-index: 20;
-}
-
-.admin-controls .btn {
-    padding: 4px 10px;
-    font-size: 20px;
-    min-width: auto;
-    box-shadow: 3px 3px 0 #000;
-}
-
-.admin-controls .btn:hover {
-    transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
