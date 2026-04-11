@@ -36,9 +36,15 @@ async function renderGallery() {
     const grid = document.getElementById('grid');
 
     try {
-        const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases`);
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/releases`);
         if (!response.ok) throw new Error('GitHub API error');
-        const releases = await response.json();
+        let releases = await response.json();
+
+        releases.sort((a, b) => {
+            const dateA = a.published_at || a.created_at || '1970-01-01';
+            const dateB = b.published_at || b.created_at || '1970-01-01';
+            return new Date(dateB) - new Date(dateA);
+        });
 
         grid.innerHTML = '';
 
