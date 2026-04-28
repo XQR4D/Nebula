@@ -1,11 +1,11 @@
 :root {
-    --bg: #0d0b0f;
-    --surface: #1c1821;
-    --border-heavy: #ffffff;
-    --accent-primary: #ff00aa;
-    --accent-secondary: #00ffcc;
-    --text: #f8f8f8;
-    --text-muted: #b0a8c0;
+    --bg: #000000;
+    --surface: #111111;
+    --border-heavy: #000000;
+    --accent-primary: #15ff00;
+    --accent-secondary: #ffffff;
+    --text: #ffffff;
+    --text-muted: #ffffff;
 }
 
 * {
@@ -15,7 +15,7 @@
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Press Start 2P', system-ui, sans-serif;
+    font-family: 'Dela Gothic One', sans-serif;
     line-height: 1.5;
     font-size: 15px;
     margin: 0;
@@ -66,7 +66,6 @@ h1 {
     left: 0;
     right: 0;
     height: 8px;
-    background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
 }
 
 .logo-wrapper {
@@ -78,11 +77,9 @@ h1 {
 
 .pixel-logo {
     font-size: clamp(2.8rem, 8vw, 5.5rem);
+    text-align: center;
     letter-spacing: 0.06em;
     color: #ffffff;
-    text-shadow: 
-        8px 8px 0 var(--accent-primary),
-        -6px -6px 0 var(--accent-secondary);
     transition: transform 0.2s linear;
     display: block;
     white-space: nowrap;
@@ -96,7 +93,7 @@ h1 {
 
 .logo-sub {
     margin-top: 1.5rem;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
+    text-align: center;
     color: var(--accent-secondary);
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -198,14 +195,9 @@ h1 {
     margin: 0;
     font-weight: bold;
     text-transform: uppercase;
+    letter-spacing: 1px;
     word-break: break-word;
     overflow-wrap: break-word;
-}
-
-.video-card small {
-    padding: 0 1.5rem 1.5rem;
-    color: var(--accent-primary);
-    font-size: 0.85rem;
 }
 
 .player-container {
@@ -279,14 +271,6 @@ video {
     box-shadow: 2px 2px 0 #000;
 }
 
-.btn.small {
-    padding: 6px 12px;
-    font-size: 13px;
-    min-width: auto;
-    flex: none;
-    box-shadow: 3px 3px 0 #000;
-}
-
 .modal {
     position: fixed;
     inset: 0;
@@ -295,7 +279,7 @@ video {
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    font-family: 'Press Start 2P', system-ui, sans-serif;
+    font-family: 'Dela Gothic One', sans-serif;
 }
 
 .modal-content {
@@ -342,6 +326,55 @@ video {
     letter-spacing: 1px;
 }
 
+.site-footer {
+    border-top: 8px solid var(--border-heavy);
+    padding: 2.5rem 1.5rem 2rem;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+    display: flex;
+    align-items: center;
+    opacity: 0.2;
+}
+
+.footer-center {
+    gap: 2rem;
+}
+
+.footer-right {
+    gap: 1.8rem;
+}
+
+.footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s linear;
+    white-space: nowrap;
+}
+
+.footer-link:hover {
+    color: var(--accent-primary);
+    text-shadow: 0 0 8px var(--accent-primary);
+}
+
 @media (max-width: 768px) {
     .modal-content {
         padding: 25px 20px;
@@ -350,5 +383,16 @@ video {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         padding: 2rem 1rem;
+    }
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.2rem;
+        padding-bottom: 1rem;
+    }
+    .footer-center,
+    .footer-right {
+        flex-direction: column;
+        gap: 0.8rem;
     }
 }

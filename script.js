@@ -30,7 +30,7 @@ function renderThumbnail(card, thumbUrl) {
 
 async function renderGallery() {
     app.innerHTML = `
-        <div class="video-grid" id="grid">Загрузка космической библиотеки из релизов...</div>
+        <div class="video-grid" id="grid">Загрузка библиотеки видео...</div>
     `;
 
     const grid = document.getElementById('grid');
@@ -69,16 +69,16 @@ async function renderGallery() {
                             <img class="thumbnail" src="" alt="${asset.name}">
                         </div>
                         <div style="padding: 15px">
-                            <small style="margin:0; font-size: 10px; word-break: break-all;">НАЗВАНИЕ: ${release.name || release.tag_name}</small>
-                            <p style="color: var(--text); font-size: 8px;">> ИМЯ ФАЙЛА: ${asset.name}</p>
+                            <p style="margin:0; font-size: 10px;">${release.name || release.tag_name}</p>
                         </div>
                     `;
 
                     renderThumbnail(card, thumbUrl);
 
                     card.addEventListener('click', () => {
-                        window.location.search = `?v=${encodeURIComponent(videoUrl)}&n=${encodeURIComponent(asset.name)}`;
-                    });
+                    const releaseTitle = release.name || release.tag_name || 'Видео';
+                    window.location.search = `?v=${encodeURIComponent(videoUrl)}&n=${encodeURIComponent(asset.name)}&t=${encodeURIComponent(releaseTitle)}`;
+                });
 
                     grid.appendChild(card);
                 }
@@ -94,27 +94,32 @@ async function renderGallery() {
     }
 }
 
-function renderPlayer(url) {
+function renderPlayer(videoUrl, releaseName, fileName) {
     const params = new URLSearchParams(window.location.search);
-    const name = params.get('n') || "Video";
     const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-    const embedUrl = `${baseUrl}embed.html?v=${encodeURIComponent(url)}`;
+    const embedUrl = `${baseUrl}embed.html?v=${encodeURIComponent(videoUrl)}`;
+    
     const embedCode = `<iframe src="${embedUrl}" width="800" height="500" frameborder="0" allowfullscreen style="border-radius:12px; overflow:hidden; border:none;"></iframe>`;
 
     app.innerHTML = `
     <div class="player-container">
         <div class="glass">
             <video id="v" controls autoplay preload="metadata">
-                <source src="${url}" type="video/mp4">
+                <source src="${videoUrl}" type="video/mp4">
             </video>
-            <h1>Имя файла: ${name}</h1>
+            
+            <div style="padding: 20px 0 10px 0;">
+                <p style="margin:0; font-size: 0.95rem; word-break: break-all; text-align:center">
+                    ${releaseName || 'Без названия'}
+                </p>
+            </div>
+
             <div class="controls">
                 <button class="btn" id="copyLinkBtn">ССЫЛКА</button>
-                <a href="${url}" target="_blank" class="btn" style="text-decoration:none">СКАЧАТЬ</a>
+                <a href="${videoUrl}" target="_blank" class="btn" style="text-decoration:none">СКАЧАТЬ</a>
                 <button class="btn" id="copyEmbedBtn">&lt;/&gt; EMBED</button>
             </div>
-        </div>
-        <button class="btn" style="margin-top:30px; background:none; color:white; border:6px solid rgba(255,255,255,0.3); min-width:180px;" onclick="window.location.href='index.html'">← В БИБЛИОТЕКУ</button>
+        </div>        
     </div>`;
 
     const video = document.getElementById('v');
@@ -132,8 +137,12 @@ function renderPlayer(url) {
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const videoUrl = params.get('v');
+    
     if (videoUrl) {
-        renderPlayer(videoUrl);
+        const fileName = params.get('n') || "Video";
+        const title = params.get('t') || fileName;
+        
+        renderPlayer(videoUrl, title, fileName);
     } else {
         renderGallery();
     }
