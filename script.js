@@ -1,5 +1,5 @@
 const GITHUB_USER = "xqr4d";
-const GITHUB_REPO = "Nebula";
+const GITHUB_REPO = "Hinata";
 
 const app = document.getElementById('app');
 
